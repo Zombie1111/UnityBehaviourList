@@ -11,7 +11,7 @@
 ## Overview
 A Behaviour List is a list of states and conditions to change the state. Each state can be assigned a script (The behaviour of the state) and the conditions are a list of scripts. Like a semi-visual state machine.
 
-(Image of demo Behaviour List, add later)
+<img src="https://i.postimg.cc/rpKNwcyq/image.png" width="75%" height="75%" alt="Image of Behaviour List"/>
 
 ## Key Features
 <ul>
@@ -41,8 +41,11 @@ A Behaviour List is a list of states and conditions to change the state. Each st
 Most functions are documented and all parameters visible in the Unity inspector have tooltips
 
 See `Extras/Chance.cs` for LeafCondition code example
+
 See `_Demo/ExampleAiData.cs` for ListData code example
+
 See `_Demo/ExampleBranchBehIdle.cs` for BranchBehaviour code example
+
 The `_Demo/` folder contains more pratical exampels
 
 ## License
