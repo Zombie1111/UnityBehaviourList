@@ -21,7 +21,9 @@ namespace behLists
         /// <summary>
         /// Initinilizes the behaviourList and returns the ListData copy (Null if listDataAsset was not assigned)
         /// </summary>
-        public ListData Init()
+        /// <param name="trans">The transform the behaviourList is attatched to, passing null is allowed</param>
+        /// <returns></returns>
+        public ListData Init(Transform trans)
         {
             if (isInitilized == true) return listData;
             isInitilized = true;
@@ -31,14 +33,14 @@ namespace behLists
             if (listDataAsset != null)
             {
                 listData = Object.Instantiate(listDataAsset);
-                listData.Init(this);
+                listData.Init(this, trans);
             }
             else listData = null;
 
             foreach (Root root in roots)
             {
                 if (rootIdToRoot.TryAdd(root.rootId, root) == false) Debug.LogError("More than one root has the rootId: " + root.rootId + ", this is not allowed");
-                root.Init(this, listData);
+                root.Init(this, listData, trans);
             }
 
             return listData;
@@ -137,14 +139,14 @@ namespace behLists
                 return activeBranchId;
             }
 
-            internal void Init(BehaviourList behList, ListData listData)
+            internal void Init(BehaviourList behList, ListData listData, Transform trans)
             {
                 if (rootId.Length == 0) Debug.LogError("A root has a rootId with lenght 0, this is not recommended");
 
                 foreach (Branch branch in branches)
                 {
                     if (branchIdToBranch.TryAdd(branch.branchId, branch) == false) Debug.LogError("More than one branch has the branchId: " + branch.branchId + ", this is not allowed");
-                    branch.Init(behList, listData, rootId);
+                    branch.Init(behList, listData, trans, rootId);
                 }
 
                 string ogActiveBranch = activeBranchId;
@@ -203,14 +205,14 @@ namespace behLists
                 private int lastCheckedLeafIndex = 0;
                 [System.NonSerialized] private BehaviourList thisBehList = null;//Why do I need to specify NonSerialized??
 
-                internal void Init(BehaviourList behList, ListData listData, string rootId)
+                internal void Init(BehaviourList behList, ListData listData, Transform trans, string rootId)
                 {
                     if (branchId.Length == 0) Debug.LogError("A branch has a branchId with lenght of 0, this is not recommended");
 
                     if (branchBehaviourAsset != null)
                     {
                         branchBehaviour = Object.Instantiate(branchBehaviourAsset);
-                        branchBehaviour.Init(behList, listData, rootId, branchId);
+                        branchBehaviour.Init(behList, listData, trans, rootId, branchId);
                     }
                     else branchBehaviour = null;
 
@@ -218,7 +220,7 @@ namespace behLists
 
                     foreach (Leaf leaf in leafs)
                     {
-                        leaf.Init(behList, listData, rootId, branchId);
+                        leaf.Init(behList, listData, trans, rootId, branchId);
                     }
                 }
 
@@ -340,7 +342,7 @@ namespace behLists
                     private Dictionary<string, List<string>> rootIdToBranchIds = new();
                     private float timeAtLastCheck = 0.0f;
 
-                    internal void Init(BehaviourList behList, ListData listData, string rootId, string branchId)
+                    internal void Init(BehaviourList behList, ListData listData, Transform trans, string rootId, string branchId)
                     {
                         leafStates = new bool[leafConditionAssets.Count];
                         leafConditions = new LeafCondition[leafConditionAssets.Count];
@@ -349,7 +351,7 @@ namespace behLists
                         {
                             if (leafConditionAssets[i] == null) Debug.LogError("A LeafCondition in leafConditionAssets has not been assigned");
                             leafConditions[i] = Object.Instantiate(leafConditionAssets[i]);
-                            leafConditions[i].Init(behList, listData, rootId, branchId);
+                            leafConditions[i].Init(behList, listData, trans, rootId, branchId);
                         }
 
                         foreach (Top top in tops)

@@ -13,7 +13,7 @@ namespace behListsExamples
 
         private void Awake()
         {
-            aiData = (ExampleAiData)behList.Init();
+            aiData = (ExampleAiData)behList.Init(transform);
         }
 
         private void OnDestroy()

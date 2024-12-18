@@ -11,7 +11,7 @@ namespace behListsExamples
         [System.NonSerialized] public Vector3 targetPos;
         [System.NonSerialized] public Vector3 aiPos;
 
-        public override void Init(BehaviourList behList)
+        public override void Init(BehaviourList behList, Transform trans)
         {
 
         }

@@ -12,7 +12,7 @@ namespace behListsExtras
         [Tooltip("If true, the chance is checked once on branch activated")][SerializeField] private bool singleChance = true;
         private bool singleWasTrue = false;
 
-        public override void Init(BehaviourList behList, ListData listData, string rootId, string branchId)
+        public override void Init(BehaviourList behList, ListData listData, Transform trans, string rootId, string branchId)
         {
 
         }

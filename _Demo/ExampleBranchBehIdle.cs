@@ -8,7 +8,7 @@ namespace behListsExamples
     [CreateAssetMenu(menuName = "Custom/BehaviourList/BranchBeh/ExampleIdle")]
     public class ExampleBranchBehIdle : BranchBehaviour
     {
-        public override void Init(BehaviourList behList, ListData listData, string rootId, string branchId)
+        public override void Init(BehaviourList behList, ListData listData, Transform trans, string rootId, string branchId)
         {
 
         }

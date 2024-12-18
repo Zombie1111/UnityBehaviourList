@@ -12,7 +12,8 @@ namespace behLists
         /// <param name="listData">The listData asset copy, global for all BranchBehaviours and LeafConditions in this BehaviourList</param>
         /// <param name="rootId">The rootId this BranchBehaviour has</param>
         /// <param name="branchId">The branchId this BranchBehaviour has</param>
-        public virtual void Init(BehaviourList behList, ListData listData, string rootId, string branchId)
+        /// <param name="trans">The transform the BranchBehaviour is attatched to</param>
+        public virtual void Init(BehaviourList behList, ListData listData, Transform trans, string rootId, string branchId)
         {
 
         }

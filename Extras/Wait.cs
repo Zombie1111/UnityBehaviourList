@@ -12,7 +12,7 @@ namespace behListsExtras
         [Tooltip("Max delay in seconds, should be higher than delayMin")][SerializeField] private float delayMax = 1.2f;
         private float timer = 0.0f;
 
-        public override void Init(BehaviourList behList, ListData listData, string rootId, string branchId)
+        public override void Init(BehaviourList behList, ListData listData, Transform trans, string rootId, string branchId)
         {
 
         }
@@ -27,7 +27,6 @@ namespace behListsExtras
         {
 
         }
-
 
         public override void OnActivated(string oldBranchId)
         {

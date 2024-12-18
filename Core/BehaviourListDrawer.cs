@@ -25,11 +25,13 @@ namespace behLists
         {
             EditorGUI.BeginProperty(position, label, property);
 
-            //Bug in unity I tink, so must hide drop down text when its shown
-            showBehList = EditorGUI.Foldout(position, showBehList, showBehList == false ? "Show Behaviour List" : string.Empty);
+            //Showlist drop down
+            var positionFold = position;
+            positionFold.height = EditorGUIUtility.singleLineHeight;
+            showBehList = EditorGUI.Foldout(positionFold, showBehList, "Show Behaviour List", true);
             if (showBehList == false) goto SkipDrawStuff;
-            position.y += EditorGUIUtility.singleLineHeight + BehListDrawGlob.spacing;
 
+            position.y += EditorGUIUtility.singleLineHeight + BehListDrawGlob.spacing;
             Color ogCol = BehListDrawGlob.ogColor;
 
             // Draw ListDataAsset

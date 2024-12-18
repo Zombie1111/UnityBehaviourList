@@ -12,7 +12,7 @@ namespace behListsExamples
         [Tooltip("If true we want the target to be far away")][SerializeField] private bool reverse = false;
         private ExampleAiData aiData;
 
-        public override void Init(BehaviourList behList, ListData listData, string rootId, string branchId)
+        public override void Init(BehaviourList behList, ListData listData, Transform trans, string rootId, string branchId)
         {
             aiData = (ExampleAiData)listData;
         }
