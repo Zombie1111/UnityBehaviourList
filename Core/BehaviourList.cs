@@ -4,9 +4,52 @@ using UnityEngine;
 
 namespace behLists
 {
+    public enum AssetInstanceMode
+    {
+        /// <summary>
+        ///  Init/OnWillDestroy will be called once per instance and OnActivated/OnDeactivated will be called in an alternating order
+        /// </summary>
+        OneInstancePerReference = 0,
+        /// <summary>
+        /// Init/OnWillDestroy may be called multiple times on the same instance and OnActivated/OnDeactivated is not garanteed to be called in an alternating order
+        /// </summary>
+        OneInstancePerBehaviourList = 1,
+        /// <summary>
+        /// Init/OnWillDestroy may be called multiple times on the same instance and OnActivated/OnDeactivated is not garanteed to be called in an alternating order
+        /// </summary>
+        DoNotInstantiate = 2
+    }
+
     [System.Serializable]
     public class BehaviourList
     {
+        #region AssetInstantiate
+
+        private Dictionary<ScriptableObject, ScriptableObject> assetToAssetInstance = new();
+
+        private T GetAssetInstance<T>(T asset, AssetInstanceMode instanceMode) where T : ScriptableObject
+        {
+            if (instanceMode == AssetInstanceMode.OneInstancePerReference) return Object.Instantiate(asset);
+            if (instanceMode == AssetInstanceMode.DoNotInstantiate) return asset;
+
+            if (assetToAssetInstance.TryGetValue(asset, out var assetInstance) == true) return (T)assetInstance;
+            var newInstance = Object.Instantiate(asset);
+            assetToAssetInstance.Add(asset, newInstance);
+            return newInstance;
+        }
+
+        private static void DestroyAssetInstance<T>(T assetInstance, AssetInstanceMode instanceMode) where T : ScriptableObject
+        {
+            if (instanceMode == AssetInstanceMode.DoNotInstantiate) return;//Prevent trying to destroy shared assets
+            if (assetInstance == null) return;//assetInstance may already been destroyed if AssetInstanceMode.OneInstancePerBehaviourList,
+                                              //probably impossible because im checking for null before calling this function
+
+            Object.Destroy(assetInstance);
+            //BehaviourList.Destroy will be called after to clear assetToAssetInstance so we can keep this function static
+        }
+
+        #endregion AssetInstantiate
+
         #region BehaviourList
         [Tooltip("Assign a scriptableObject that inherit from ListData." +
             " A copy of this scriptableObject can be accessed from any BranchBehaviour or LeafCondition of this Behaviour List")]
@@ -32,7 +75,7 @@ namespace behLists
 
             if (listDataAsset != null)
             {
-                listData = Object.Instantiate(listDataAsset);
+                listData = GetAssetInstance(listDataAsset, listDataAsset.GetInstanceMode());
                 listData.Init(this, trans);
             }
             else listData = null;
@@ -63,8 +106,10 @@ namespace behLists
             if (listData != null)
             {
                 listData.OnWillDestroy();
-                Object.Destroy(listData);
+                BehaviourList.DestroyAssetInstance(listData, listData.GetInstanceMode());
             }
+
+            assetToAssetInstance.Clear();
         }
 
         /// <summary>
@@ -211,7 +256,7 @@ namespace behLists
 
                     if (branchBehaviourAsset != null)
                     {
-                        branchBehaviour = Object.Instantiate(branchBehaviourAsset);
+                        branchBehaviour = behList.GetAssetInstance(branchBehaviourAsset, branchBehaviourAsset.GetInstanceMode());
                         branchBehaviour.Init(behList, listData, trans, rootId, branchId);
                     }
                     else branchBehaviour = null;
@@ -236,7 +281,7 @@ namespace behLists
                     if (branchBehaviour == null) return;
 
                     branchBehaviour.OnWillDestroy();
-                    Object.Destroy(branchBehaviour);
+                    BehaviourList.DestroyAssetInstance(branchBehaviour, branchBehaviour.GetInstanceMode());
                 }
 
                 internal void Tick(float deltaTime)
@@ -350,7 +395,7 @@ namespace behLists
                         for (int i = 0; i < leafConditionAssets.Count; i++)
                         {
                             if (leafConditionAssets[i] == null) Debug.LogError("A LeafCondition in leafConditionAssets has not been assigned");
-                            leafConditions[i] = Object.Instantiate(leafConditionAssets[i]);
+                            leafConditions[i] = behList.GetAssetInstance(leafConditionAssets[i], leafConditionAssets[i].GetInstanceMode());
                             leafConditions[i].Init(behList, listData, trans, rootId, branchId);
                         }
 
@@ -373,8 +418,10 @@ namespace behLists
                     {
                         foreach (LeafCondition leafCondition in leafConditions)
                         {
+                            if (leafCondition == null) continue;
+                            
                             leafCondition.OnWillDestroy();
-                            Object.Destroy(leafCondition);
+                            BehaviourList.DestroyAssetInstance(leafCondition, leafCondition.GetInstanceMode());
                         }
 
                         rootIdToBranchIds.Clear();

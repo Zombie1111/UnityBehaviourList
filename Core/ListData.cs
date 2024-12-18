@@ -6,10 +6,18 @@ namespace behLists
     public abstract class ListData : ScriptableObject
     {
         /// <summary>
+        /// Called before Init and after OnWillDestroy, this may be called on the shared asset and not on the same instance of the asset as Init
+        /// </summary>
+        public virtual AssetInstanceMode GetInstanceMode()
+        {
+            return AssetInstanceMode.OneInstancePerReference;//There can only be one ListData per BehaviourList so AssetInstanceMode.OneInstancePerBehaviourList has no effect
+        }
+
+        /// <summary>
         /// Called on BehaviourList initilization (ListData is the first thing that gets initialized)
         /// </summary>
         /// <param name="behList">The BehaviourList this ListData is a part of</param>
-        /// <param name="trans">The transform the behaviour list is attatched to</param>
+        /// <param name="trans">The transform the BehaviourList is attatched to</param>
         public virtual void Init(BehaviourList behList, Transform trans)
         {
 

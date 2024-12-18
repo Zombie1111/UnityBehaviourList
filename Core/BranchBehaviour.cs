@@ -6,6 +6,14 @@ namespace behLists
     public abstract class BranchBehaviour : ScriptableObject
     {
         /// <summary>
+        /// Called before Init and after OnWillDestroy, this may be called on the shared asset and not on the same instance of the asset as Init
+        /// </summary>
+        public virtual AssetInstanceMode GetInstanceMode()
+        {
+            return AssetInstanceMode.OneInstancePerReference;
+        }
+
+        /// <summary>
         /// Called on BehaviourList initilization after ListData.Init()
         /// </summary>
         /// <param name="behList">The BehaviourList this BranchBehaviour is a part of</param>

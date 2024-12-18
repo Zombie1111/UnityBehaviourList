@@ -6,13 +6,21 @@ namespace behLists
     public abstract class LeafCondition : ScriptableObject
     {
         /// <summary>
+        /// Called before Init and after OnWillDestroy, this may be called on the shared asset and not on the same instance of the asset as Init
+        /// </summary>
+        public virtual AssetInstanceMode GetInstanceMode()
+        {
+            return AssetInstanceMode.OneInstancePerReference;
+        }
+
+        /// <summary>
         /// Called on BehaviourList initilization after BranchBehaviour.Init()
         /// </summary>
         /// <param name="behList">The BehaviourList this LeafCondition is a part of</param>
         /// <param name="listData">The listData asset copy, global for all BranchBehaviours and LeafConditions in this BehaviourList</param>
         /// <param name="rootId">The rootId this LeafCondition has</param>
         /// <param name="branchId">The branchId this LeafCondition has</param>
-        /// <param name="trans">The transform the LeafCondition is attatched to</param>
+        /// <param name="trans">The transform the BehaviourList is attatched to</param>
         public virtual void Init(BehaviourList behList, ListData listData, Transform trans, string rootId, string branchId)
         {
             
