@@ -158,6 +158,15 @@ namespace behLists
             return rootIdToRoot.ContainsKey(rootId);
         }
 
+        /// <summary>
+        /// Returns the BranchBehaviour for the branchId in the given rootId, throws if no root has the given rootId
+        /// (Returns null if no BranchBehaviourAsset has been assigned in branchId or no branch has branchId)
+        /// </summary>
+        public BranchBehaviour GetBranchBehaviour(string rootId, string branchId)
+        {
+            return rootIdToRoot[rootId].GetBranchBehaviour(branchId);
+        }
+
         #endregion BehaviourList
 
         [System.Serializable]
@@ -182,6 +191,12 @@ namespace behLists
             internal string GetActiveBranchId()
             {
                 return activeBranchId;
+            }
+
+            internal BranchBehaviour GetBranchBehaviour(string branchId)
+            {
+                if (branchIdToBranch.TryGetValue(branchId, out Branch branch) == false) return null;
+                return branch.GetBranchBehaviour();
             }
 
             internal void Init(BehaviourList behList, ListData listData, Transform trans)
@@ -328,6 +343,11 @@ namespace behLists
                     return bools;
                 }
 
+                internal BranchBehaviour GetBranchBehaviour()
+                {
+                    return branchBehaviour;
+                }
+
                 internal void Activate(string oldBranchId)
                 {
                     if (isActive == true) return;
@@ -419,7 +439,7 @@ namespace behLists
                         foreach (LeafCondition leafCondition in leafConditions)
                         {
                             if (leafCondition == null) continue;
-                            
+
                             leafCondition.OnWillDestroy();
                             BehaviourList.DestroyAssetInstance(leafCondition, leafCondition.GetInstanceMode());
                         }
