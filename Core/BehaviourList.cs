@@ -124,6 +124,40 @@ namespace behLists
             rootIdToRoot[rootId].Tick(deltaTime);
         }
 
+        public enum ResetType
+        {
+            all,
+            allExceptListData,
+            listDataOnly,
+            branchBehavioursOnly,
+            LeafConditionsOnly
+        }
+
+        /// <summary>
+        /// Calls OnReset() on the stuff choosen, throws if rootId != null and if no root has rootId
+        /// </summary>
+        /// <param name="resetType">What stuff can be reseted?</param>
+        /// <param name="rootId">If != null, can only call OnReset() on branchBehaviours and LeafConditions with this rootId</param>
+        /// <param name="branchId">If != null, can only call OnReset() on LeafConditions with this branchId</param>
+        public void Reset(ResetType resetType = ResetType.all, string rootId = null, string branchId = null)
+        {
+            if (isInitilized == false) return;
+
+            if (resetType != ResetType.listDataOnly)
+            {
+                if (rootId == null)
+                {
+                    foreach (Root root in roots)
+                    {
+                        root.Reset(resetType, branchId);
+                    }
+                }
+                else rootIdToRoot[rootId].Reset(resetType, branchId);
+            }
+
+            if (resetType == ResetType.all || resetType == ResetType.listDataOnly) listData.OnReset();
+        }
+
         /// <summary>
         /// Sets the activeBranchId for the given rootId, throws exception if no root has the given rootId
         /// </summary>
@@ -232,6 +266,22 @@ namespace behLists
                 branch.Tick(deltaTime);
             }
 
+            internal void Reset(BehaviourList.ResetType resetType, string branchId = null)
+            {
+                if (branchId == null)
+                {
+                    foreach (Branch branch in branches)
+                    {
+                        branch.Reset(resetType);
+                    }
+
+                    return;
+                }
+
+                if (branchIdToBranch.TryGetValue(branchId, out Branch branchB) == false) return;
+                branchB.Reset(resetType);
+            }
+
             internal bool[] CheckBranchConditions(string branchId, float deltaTime)
             {
                 if (branchIdToBranch.TryGetValue(branchId, out Branch branch) == false) return null;
@@ -329,6 +379,20 @@ namespace behLists
                         leaf.TriggerTops(thisBehList);
                         if (leafBehaviour == LeafBehaviour.checkAllAndTriggerFirstTrue) return;
                     }
+                }
+
+                internal void Reset(BehaviourList.ResetType resetType)
+                {
+                    if (resetType != ResetType.branchBehavioursOnly)
+                    {
+                        foreach (Leaf leaf in leafs)
+                        {
+                            leaf.Reset();
+                        }
+                    }
+
+                    if (resetType == ResetType.LeafConditionsOnly) return;
+                    branchBehaviour.OnReset();
                 }
 
                 internal bool[] CheckConditions(float deltaTime)
@@ -439,7 +503,7 @@ namespace behLists
                         foreach (LeafCondition leafCondition in leafConditions)
                         {
                             if (leafCondition == null) continue;
-
+                            
                             leafCondition.OnWillDestroy();
                             BehaviourList.DestroyAssetInstance(leafCondition, leafCondition.GetInstanceMode());
                         }
@@ -502,6 +566,14 @@ namespace behLists
 
                         if (requirement == Requirement.any && trueCount > 0) return true;
                         return trueCount >= leafStates.Length;
+                    }
+
+                    internal void Reset()
+                    {
+                        foreach (LeafCondition cond in leafConditions)
+                        {
+                            cond.OnReset();
+                        }
                     }
 
                     /// <summary>

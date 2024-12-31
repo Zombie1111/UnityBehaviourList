@@ -38,6 +38,14 @@ namespace behLists
         }
 
         /// <summary>
+        /// Called when the BehaviourList should be reseted, can only be called if initilized
+        /// </summary>
+        public virtual void OnReset()
+        {
+
+        }
+
+        /// <summary>
         /// Called just before BehaviourList destruction, Can only be called if Init() has been called before
         /// </summary>
         public virtual void OnWillDestroy()
