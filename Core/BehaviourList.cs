@@ -503,7 +503,7 @@ namespace behLists
                         foreach (LeafCondition leafCondition in leafConditions)
                         {
                             if (leafCondition == null) continue;
-                            
+
                             leafCondition.OnWillDestroy();
                             BehaviourList.DestroyAssetInstance(leafCondition, leafCondition.GetInstanceMode());
                         }

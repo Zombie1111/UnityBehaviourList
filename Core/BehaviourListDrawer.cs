@@ -1,4 +1,4 @@
-//UnityBehaviourList by David Westberg https://github.com/Zombie1111/UnityBehaviourList
+﻿//UnityBehaviourList by David Westberg https://github.com/Zombie1111/UnityBehaviourList
 #if UNITY_EDITOR
 using UnityEditor;
 using UnityEngine;
@@ -255,14 +255,41 @@ namespace behLists
                     position.height = EditorGUIUtility.singleLineHeight + spacing;
                     EditorGUI.DrawRect(position, BehListDrawGlob.ogColor * 1.3f * 1.15f);
                     position.height = EditorGUIUtility.singleLineHeight;
-                    if (GUI.Button(position, "Remove Leaf"))
+                    var butPos = position;
+                    float butOffset = butPos.width * 0.195f;//Looks better when they are overlapping slightly
+                    butPos.width -= butOffset;
+                    butPos.x += butOffset;
+
+                    SerializedProperty leaf = leafs.GetArrayElementAtIndex(i);
+                    var tops = leaf.FindPropertyRelative("tops");
+                    string leafName = string.Empty;
+                    if (tops.arraySize > 0) leafName = tops.GetArrayElementAtIndex(0).FindPropertyRelative("rootIdNewActiveBranchId").stringValue;
+                    bool changed = false;
+
+                    if (GUI.Button(butPos, "Remove Leaf " + leafName))
                     {
                         leafs.DeleteArrayElementAtIndex(i);
                         i--;
                         if (i < 0) break;
+                        changed = true;
                     }
 
-                    SerializedProperty leaf = leafs.GetArrayElementAtIndex(i);
+                    butPos = position;
+                    butPos.width *= 0.1f;
+                    if (GUI.Button(butPos, "↑"))
+                    {
+                        leafs.MoveArrayElement(i, i - 1);
+                        changed = true;
+                    }
+
+                    butPos.x += butOffset * 0.5f;
+                    if (GUI.Button(butPos, "↓"))
+                    {
+                        leafs.MoveArrayElement(i, i + 1);
+                        changed = true;
+                    }
+
+                    if (changed == true) leaf = leafs.GetArrayElementAtIndex(i);
                     position.y += EditorGUIUtility.singleLineHeight + BehListDrawGlob.spacing;
                     EditorGUI.PropertyField(position, leaf, new GUIContent($"Leaf {i}"), true);
                     position.y += EditorGUI.GetPropertyHeight(leaf) + BehListDrawGlob.spacing;
