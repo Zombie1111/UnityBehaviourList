@@ -1,5 +1,5 @@
 
-<h1 align="center">Unity Behaviour List By David Westberg</h1>
+<h1>Unity Behaviour List</h1>
 
 ## Table of Contents
 - [Overview](#overview)
